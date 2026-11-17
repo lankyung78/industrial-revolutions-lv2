@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Industrial Revolutions: From Steam Power to Artificial Intelligence</title>
+<style>
+:root{
+  --navy:#172d43;
+  --muted:#617180;
+  --line:#dce3e7;
+  --teal:#427c79;
+  --pale:#f4f7f7
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#fff;
+  color:var(--navy);
+  font:15px/1.6 Arial,Helvetica,sans-serif
+}
+header{
+  padding:22px max(22px,calc((100vw - 1100px)/2));
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px
+}
+main{max-width:1100px;margin:auto;padding:42px 24px}
+.eyebrow{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  color:var(--teal)
+}
+h1{
+  font:400 clamp(32px,5vw,48px)/1.15 Georgia,serif;
+  letter-spacing:-1px;
+  margin:18px 0
+}
+h1 span{display:block;color:var(--muted)}
+.intro p{color:var(--muted);max-width:700px}
+.meta{font-size:12px;color:var(--muted)}
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  list-style:none;
+  padding:0;
+  margin:36px 0 12px
+}
+.timeline li{
+  position:relative;
+  border-top:2px solid var(--line);
+  padding:20px 12px 12px 0
+}
+.timeline li:before{
+  position:absolute;
+  top:-6px;
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#a4b4bc
+}
+.timeline li.active{border-color:var(--teal)}
+.timeline li.active:before{background:var(--teal)}
+.timeline-date,.era-short{font-size:11px;color:var(--muted)}
+.era-title{font-size:13px;font-weight:700;margin:5px 0}
+.timeline-note{font-size:11px;color:var(--muted);margin-bottom:28px}
+.workspace{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 235px;
+  gap:24px;
+  align-items:start
+}
+.quiz-card{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:28px;
+  box-shadow:0 6px 24px #172d4305
+}
+.quiz-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px
+}
+#quiz-label{font-size:10px;font-weight:700;letter-spacing:1px}
+#position{font-size:11px;color:var(--muted);white-space:nowrap}
+.progress-track{
+  height:4px;
+  background:#edf1f2;
+  margin:18px 0 26px;
+  border-radius:5px;
+  overflow:hidden
+}
+#progress-fill{
+  background:var(--teal);
+  height:100%;
+  width:0;
+  transition:width .3s
+}
+h2{font:400 26px/1.4 Georgia,serif;margin:16px 0}
+.question-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#era-badge{
+  background:#edf3f2;
+  color:var(--teal);
+  border-radius:3px;
+  font-size:11px;
+  padding:5px 8px
+}
+#question-type{font-size:10px;letter-spacing:1px;color:var(--muted)}
+.instruction{font-size:12px;color:var(--muted)}
+fieldset{padding:0;margin:20px 0 0;border:0;display:grid;gap:10px}
+.answer{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:62px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:14px;
+  cursor:pointer;
+  font-size:14px;
+  transition:background .15s,border-color .15s
+}
+.answer:hover{background:#f7f9fa;border-color:#91a4af}
+.answer:has(input:checked){border-color:var(--navy);background:#f0f4f7}
+.answer:has(input:focus-visible){outline:3px solid #709bba;outline-offset:2px}
+.answer input{position:absolute;opacity:0;width:1px;height:1px}
+.letter{
+  width:28px;
+  height:28px;
+  flex-shrink:0;
+  border:1px solid var(--line);
+  border-radius:3px;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  color:var(--muted);
+  background:white
+}
+.answer:has(input:checked) .letter{
+  background:var(--navy);
+  color:white;
+  border-color:var(--navy)
+}
+.answer.correct{background:#edf6f0;border-color:#6b9a7d}
+.answer.incorrect{background:#fcf1ee;border-color:#bd806c}
+.answer.locked{cursor:default}
+.outcome{margin-left:auto;font-size:10px;font-weight:700}
+.quiz-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-top:1px solid var(--line);
+  padding-top:20px;
+  margin-top:24px
+}
+#action-hint{font-size:11px;color:var(--muted)}
+button{
+  font:600 13px Arial,sans-serif;
+  cursor:pointer;
+  border-radius:4px;
+  padding:14px 18px;
+  min-height:48px
+}
+.primary{background:var(--navy);color:white;border:1px solid var(--navy)}
+.primary:hover{background:#29465e}
+button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,a:focus-visible,summary:focus-visible{
+  outline:3px solid #709bba;
+  outline-offset:3px
+}
+[hidden]{display:none!important}
+#feedback{
+  margin-top:20px;
+  padding:18px;
+  background:#f1f6f4;
+  border-left:3px solid var(--teal);
+  font-size:14px;
+  animation:appear .2s ease
+}
+#feedback.wrong{background:#fcf5ef;border-color:#a56848}
+#feedback strong{display:block;margin-bottom:6px}
+#feedback p{margin:0;color:#425869}
+.learning-note{
+  background:var(--pale);
+  border-radius:6px;
+  padding:24px
+}
+.learning-note h2{font-size:24px;margin-top:0}
+.learning-note p,.learning-note li{font-size:13px;color:var(--muted)}
+.learning-note ol{padding-left:18px}
+.learning-note li{margin:14px 0}
+.privacy{border-top:1px solid var(--line);padding-top:18px;margin-top:24px}
+footer{
+  border-top:1px solid var(--line);
+  padding-top:22px;
+  margin-top:40px;
+  font-size:11px;
+  color:var(--muted)
+}
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0
+}
+.score{font:64px Georgia,serif;color:var(--teal);margin:20px 0}
+.score small{font:18px Arial,sans-serif;color:var(--muted)}
+.summary-row{
+  border-top:1px solid var(--line);
+  padding:14px 0;
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  font-size:13px
+}
+.review{margin:24px 0}
+.review summary{cursor:pointer;font-size:14px;font-weight:700}
+.review-item{padding:15px 0;border-bottom:1px solid var(--line)}
+.review-item h3{font-size:14px}
+.review-item p{font-size:13px;color:var(--muted)}
+.mode-actions{display:flex;flex-direction:column;gap:12px;margin:22px 0}
+.mode-actions>button:not(.primary){
+  background:white;
+  border:1px solid var(--line);
+  color:var(--navy)
+}
+.disclosure{font-size:11px!important;color:var(--muted);line-height:1.7}
+.route-note{
+  font-size:12px;
+  color:var(--teal);
+  background:#f0f5f4;
+  padding:12px;
+  border-radius:4px
+}
+.source-list{padding-left:20px;font-size:12px}
+.source-list a{color:var(--teal);overflow-wrap:anywhere}
+.source-list small{display:block;color:var(--muted)}
+#request-status:empty{display:none}
+#request-status{font-size:12px;color:var(--muted)}
+#error{background:#fcf1ee;color:#803c2a;padding:14px;font-size:13px}
+#question:focus,#results-title:focus{outline:none}
+@keyframes appear{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:800px){
+  .workspace{grid-template-columns:1fr}
+  .learning-note{display:none}
+}
+@media(max-width:480px){
+  main{padding:28px 18px}
+  .timeline{grid-template-columns:1fr 1fr;row-gap:14px}
+  .quiz-card{padding:22px 18px}
+  #question{font-size:23px}
+  .answer{padding:12px 10px;font-size:13px}
+  .outcome{max-width:65px}
+  #action-hint{display:none}
+  .quiz-actions button{width:100%}
+  .summary-row{font-size:12px}
+  #quiz-label{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<header>IR⁴ &nbsp; THE INDUSTRIAL REVOLUTIONS</header>
+
+<main>
+  <section class="intro">
+    <div class="eyebrow">EXPLORE THE IDEAS THAT CHANGED THE WORLD</div>
+    <h1>The Industrial Revolutions
+      <span>From Steam Power to Artificial Intelligence.</span>
+    </h1>
+    <p>Four revolutions. Centuries of transformation.
+      Explore how technology reshaped society, with questions
+      that respond to your answers.</p>
+    <div class="meta">20 questions · Four historical eras · Learn as you go</div>
+  </section>
+
+  <section aria-label="Timeline of the four Industrial Revolutions">
+    <ol id="timeline" class="timeline"></ol>
+    <p class="timeline-note">
+      Dates are approximate. Transformations overlap and unfolded
+      differently across regions.
+    </p>
+  </section>
+
+  <div class="workspace">
+    <section class="quiz-card" aria-label="Interactive quiz">
+      <div class="quiz-top">
+        <span id="quiz-label">CHOOSE YOUR LEARNING MODE</span>
+        <span id="position"></span>
+      </div>
+
+      <div id="progress" class="progress-track"
+        role="progressbar" aria-label="Questions completed"
+        aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
+        <div id="progress-fill"></div>
+      </div>
+
+      <div id="start-view">
+        <h2>Follow your own learning path.</h2>
+        <p>Start with reasoning questions. Correct answers increase
+          the challenge; mistakes guide review of the concept.</p>
+
+        <p id="connection-status" role="status">
+          Connecting to the quiz service…
+        </p>
+
+        <div class="mode-actions">
+          <button id="start-ai" class="primary" type="button" disabled>
+            Start AI-adaptive quiz →
+          </button>
+          <button id="start-practice" type="button" disabled>
+            Use curated practice
+          </button>
+          <button id="retry-connection" type="button" hidden>
+            Retry connection
+          </button>
+        </div>
+
+        <p id="ai-disclosure" class="disclosure"></p>
+      </div>
+
+      <p id="request-status" role="status" aria-live="polite"></p>
+
+      <div id="quiz-view" hidden>
+        <p id="route-note" class="route-note"></p>
+
+        <div class="question-meta">
+          <span id="era-badge"></span>
+          <span id="question-type"></span>
+        </div>
+
+        <h2 id="question" tabindex="-1"></h2>
+        <p class="instruction">Select the best answer.</p>
+
+        <form id="answer-form">
+          <fieldset id="answers">
+            <legend class="sr-only">Answer choices</legend>
+          </fieldset>
+
+          <div id="feedback" role="status" aria-live="polite" hidden></div>
+
+          <div class="quiz-actions">
+            <span id="action-hint">One answer. A new perspective.</span>
+            <button id="submit" class="primary" type="submit" disabled>
+              Check answer →
+            </button>
+            <button id="next" class="primary" type="button" hidden>
+              Next question →
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <section id="results" aria-labelledby="results-title" hidden></section>
+      <div id="error" role="alert" hidden></div>
+    </section>
+
+    <aside class="learning-note">
+      <h2>A question that meets you where you are.</h2>
+      <p>Explore connections between inventions, industry,
+        and everyday life.</p>
+      <ol>
+        <li>Consider the question and choose an answer.</li>
+        <li>Read the explanation and its cited references.</li>
+        <li>Use your answer to guide the next question.</li>
+      </ol>
+      <p class="privacy">No student login.<br>No names requested.</p>
+    </aside>
+  </div>
+
+  <footer>
+    A perspective on the past. A foundation for the future.
+    <p class="disclosure">
+      AI-generated items receive automated source and quality checks,
+      which can miss errors. This is a learning activity;
+      adaptive scores are not standardized ability measures.
+    </p>
+  </footer>
+
+  <noscript>
+    <p>This quiz requires JavaScript. Enable JavaScript and reopen this page.</p>
+  </noscript>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const levels = ["", "Foundations", "Application", "Comparison"];
+
+  let eras = [];
+  let token = null;
+  let current = null;
+  let feedback = null;
+  let completed = 0;
+  let total = 20;
+  let busy = false;
+  let controller = null;
+  let epoch = 0;
+  let finished = false;
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  async function api(path, body) {
+    controller = new AbortController();
+    const timer = setTimeout(() => controller?.abort(), 65000);
+
+    try {
+      if (path === "/api/results") {
+        body = { ...body, action: "results" };
+      }
+
+      const response = await fetch("/api/quiz", {
+        method: body ? "POST" : "GET",
+        headers: body ? { "Content-Type": "application/json" } : {},
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+        credentials: "omit"
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw Error(data.error || "The service is unavailable. Please retry.");
+      }
+
+      return data;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function showError(message) {
+    $("error").textContent = message;
+    $("error").hidden = false;
+  }
+
+  function syncButtons() {
+    $("submit").disabled =
+      busy || Boolean(feedback) || !$("answers").querySelector("input:checked");
+
+    $("next").disabled = busy;
+
+    $("start-ai").disabled =
+      busy || $("start-ai").dataset.available !== "yes";
+
+    $("start-practice").disabled =
+      busy || $("start-practice").dataset.available !== "yes";
+  }
+
+  async function task(message, action) {
+    if (busy) return;
+
+    const stamp = epoch;
+    busy = true;
+    $("error").hidden = true;
+    $("request-status").textContent = message;
+    syncButtons();
+
+    try {
+      await action(stamp);
+    } catch (error) {
+      if (stamp === epoch) {
+        showError(
+          error.name === "AbortError"
+            ? "The request took too long. Please retry."
+            : error.message
+        );
+      }
+    } finally {
+      if (stamp === epoch) {
+        busy = false;
+        $("request-status").textContent = "";
+        syncButtons();
+      }
+    }
+  }
+
+  function timeline(activeEra) {
+    $("timeline").replaceChildren(
+      ...eras.map(era => {
+        const li = element("li", era.id === activeEra ? "active" : "");
+
+        if (era.id === activeEra) {
+          li.setAttribute("aria-current", "step");
+        }
+
+        li.append(
+          element("div", "timeline-date", era.dates),
+          element("div", "era-title", era.name.replace(" Industrial", "")),
+          element("div", "era-short", era.short)
+        );
+
+        return li;
+      })
+    );
+  }
+
+  function progress() {
+    $("position").textContent = `${completed} / ${total} completed`;
+    $("progress").setAttribute("aria-valuemax", total);
+    $("progress").setAttribute("aria-valuenow", completed);
+    $("progress-fill").style.width = `${completed / total * 100}%`;
+  }
+
+  function render(data) {
+    token = data.token;
+    current = data.question;
+    feedback = null;
+    completed = data.completed;
+    total = data.total;
+
+    $("start-view").hidden = true;
+    $("quiz-view").hidden = false;
+    $("results").hidden = true;
+    $("feedback").hidden = true;
+
+    $("quiz-label").textContent =
+      `QUESTION ${completed + 1} · ` +
+      (current.mode === "ai" ? "AI GENERATED" : "CURATED PRACTICE");
+
+    $("era-badge").textContent =
+      eras.find(era => era.id === current.era).name;
+
+    $("question-type").textContent =
+      `LEVEL ${current.difficulty} · ` +
+      levels[current.difficulty].toUpperCase();
+
+    $("question").textContent = current.prompt;
+    $("route-note").textContent = current.routeNote;
+
+    const legend = element("legend", "sr-only", "Answer choices");
+
+    const answers = current.choices.map((text, index) => {
+      const label = element("label", "answer");
+      const input = element("input");
+
+      input.type = "radio";
+      input.name = "answer";
+      input.value = index;
+      input.required = true;
+
+      const letter = element("span", "letter", "ABCD"[index]);
+      letter.setAttribute("aria-hidden", "true");
+
+      label.append(input, letter, element("span", "", text));
+      return label;
+    });
+
+    $("answers").replaceChildren(legend, ...answers);
+    $("submit").hidden = false;
+    $("submit").disabled = true;
+    $("next").hidden = true;
+    $("action-hint").textContent = "One answer. A new perspective.";
+
+    timeline(current.era);
+    progress();
+    $("question").focus();
+  }
+
+  async function connect() {
+    await task("Checking available quiz modes…", async stamp => {
+      try {
+        const info = await api("/api/info");
+        if (stamp !== epoch) return;
+
+        eras = info.eras;
+        total = info.total;
+
+        timeline(null);
+        progress();
+
+        $("start-practice").dataset.available = "yes";
+        $("start-ai").dataset.available = info.aiAvailable ? "yes" : "no";
+
+        $("connection-status").textContent = info.aiAvailable
+          ? "AI-adaptive mode is ready. You can also choose curated practice."
+          : "AI mode is not connected yet. Curated practice is available.";
+
+        $("ai-disclosure").textContent = info.disclosure;
+        $("retry-connection").hidden = true;
+      } catch (error) {
+        $("connection-status").textContent =
+          "Could not connect to the quiz service.";
+
+        $("retry-connection").hidden = false;
+        throw error;
+      }
+    });
+  }
+
+  function start(mode) {
+    task(
+      mode === "ai"
+        ? "Retrieving references and preparing your first question…"
+        : "Preparing your practice question…",
+      async stamp => {
+        const data = await api("/api/step", { action: "start", mode });
+
+        if (stamp !== epoch) return;
+
+        finished = false;
+        render(data);
+      }
+    );
+  }
+
+  $("start-ai").addEventListener("click", () => start("ai"));
+  $("start-practice").addEventListener("click", () => start("practice"));
+  $("retry-connection").addEventListener("click", connect);
+  $("answers").addEventListener("change", syncButtons);
+
+  $("answer-form").addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (busy || feedback || !current) return;
+
+    const checked = $("answers").querySelector("input:checked");
+    if (!checked) return;
+
+    task("Checking your answer…", async stamp => {
+      const data = await api("/api/step", {
+        action: "answer",
+        token,
+        answer: Number(checked.value)
+      });
+
+      if (stamp !== epoch) return;
+
+      token = data.token;
+      feedback = data.feedback;
+      completed = data.completed;
+      finished = data.phase === "complete";
+
+      $("answers").querySelectorAll("input").forEach((input, index) => {
+        input.disabled = true;
+
+        const label = input.closest("label");
+        label.classList.add("locked");
+
+        if (index === feedback.correctIndex) {
+          label.classList.add("correct");
+          label.append(element("span", "outcome", "✓ Correct answer"));
+        } else if (input.checked) {
+          label.classList.add("incorrect");
+          label.append(element("span", "outcome", "× Your answer"));
+        }
+      });
+
+      const sourceList = element("ul", "source-list");
+
+      for (const note of feedback.sources) {
+        const li = element("li");
+        const link = element("a", "", note.source.title);
+
+        link.href = note.source.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+
+        li.append(
+          link,
+          element(
+            "small",
+            "",
+            `${note.topic} · ${note.kind}; reviewed ${note.reviewed}`
+          )
+        );
+
+        sourceList.append(li);
+      }
+
+      $("feedback").replaceChildren(
+        element(
+          "strong",
+          "",
+          feedback.correct
+            ? "Correct. Here’s the connection."
+            : "Not quite. Here’s the connection."
+        ),
+        element("p", "", feedback.explanation),
+        sourceList
+      );
+
+      $("feedback").className = feedback.correct ? "" : "wrong";
+      $("feedback").hidden = false;
+      $("submit").hidden = true;
+      $("next").hidden = false;
+
+      $("next").textContent = finished
+        ? "See my results →"
+        : "Next adaptive question →";
+
+      $("action-hint").textContent =
+        "Read the explanation before continuing.";
+
+      progress();
+
+      $("next").disabled = false;
+      $("next").focus({ preventScroll: true });
+    });
+  });
+
+  $("next").addEventListener("click", () => {
+    if (!feedback || busy) return;
+
+    task(
+      finished
+        ? "Preparing your learning summary…"
+        : "Using your answer to prepare the next question…",
+      async stamp => {
+        if (finished) {
+          const result = await api("/api/results", { token });
+
+          if (stamp === epoch) {
+            results(result);
+          }
+        } else {
+          const data = await api("/api/step", {
+            action: "next",
+            token
+          });
+
+          if (stamp === epoch) {
+            render(data);
+          }
+        }
+      }
+    );
+  });
+
+  function results(result) {
+    $("quiz-view").hidden = true;
+    $("results").hidden = false;
+    $("quiz-label").textContent = "YOUR LEARNING SUMMARY";
+
+    timeline(null);
+
+    const title = element("h2", "", "A journey worth reflecting on.");
+    title.id = "results-title";
+    title.tabIndex = -1;
+
+    const score = element("div", "score", String(result.score));
+    score.append(element("small", "", " / 100"));
+
+    $("results").replaceChildren(
+      title,
+      score,
+      element(
+        "p",
+        "",
+        `${result.correct} of ${result.total} correct. ` +
+        `${result.aiCount} AI-generated questions; ` +
+        `${result.total - result.aiCount} curated practice questions.`
+      ),
+      element(
+        "p",
+        "disclosure",
+        "This score describes your personalized practice questions. " +
+        "Different students may receive different difficulty levels, " +
+        "so scores are not directly comparable."
+      )
+    );
+
+    for (const era of result.eras) {
+      const row = element("div", "summary-row");
+      const label = element("div");
+
+      label.append(
+        element("strong", "", era.name),
+        element(
+          "p",
+          "disclosure",
+          era.difficulties.map(level =>
+            `Level ${level.level}: ${level.correct}/${level.answered}`
+          ).join(" · ")
+        )
+      );
+
+      row.append(
+        label,
+        element("span", "", `${era.correct}/${era.total}`)
+      );
+
+      $("results").append(row);
+    }
+
+    const review = element("details", "review");
+    review.append(
+      element("summary", "", "Review answers and explanations")
+    );
+
+    result.review.forEach((answer, index) => {
+      const article = element("article", "review-item");
+
+      article.append(
+        element("h3", "", `${index + 1}. ${answer.prompt}`),
+        element("p", "", `Your answer: ${answer.chosen}`),
+        element("p", "", `Correct answer: ${answer.correctChoice}`),
+        element("p", "", answer.explanation)
+      );
+
+      review.append(article);
+    });
+
+    const restart = element("button", "primary", "Restart quiz ↻");
+    restart.type = "button";
+
+    restart.addEventListener("click", () => {
+      epoch++;
+      controller?.abort();
+
+      busy = false;
+      token = null;
+      current = null;
+      feedback = null;
+      completed = 0;
+      finished = false;
+
+      $("results").hidden = true;
+      $("quiz-view").hidden = true;
+      $("start-view").hidden = false;
+      $("quiz-label").textContent = "CHOOSE YOUR LEARNING MODE";
+      $("request-status").textContent = "";
+      $("error").hidden = true;
+
+      progress();
+      timeline(null);
+      syncButtons();
+      $("start-practice").focus();
+    });
+
+    $("results").append(review, restart);
+    title.focus();
+  }
+
+  connect();
+})();
+</script>
+</body>
+</html>
