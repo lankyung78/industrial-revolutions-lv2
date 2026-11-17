@@ -1,0 +1,12 @@
+{
+  "name": "industrial-revolutions-lv2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "ai": "7.0.173"
+  }
+}
